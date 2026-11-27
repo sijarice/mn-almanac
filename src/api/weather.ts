@@ -10,7 +10,8 @@ const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast';
  * Days near either edge may still come back all null; `fetchWeather` treats that as no data.
  */
 const FORECAST_MAX_DAYS_BACK = 92;
-const FORECAST_MAX_DAYS_AHEAD = 15;
+/** The API's `forecast_days` max is 16, counting today, so the last forecast day is today + 15. */
+export const FORECAST_MAX_DAYS_AHEAD = 15;
 
 const DAILY_FIELDS = [
   'weather_code',
