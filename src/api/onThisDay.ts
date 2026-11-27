@@ -46,16 +46,17 @@ export function toMonthDay(date: string): { month: string; day: string } {
 }
 
 /**
- * Fetches historical events, births and deaths for the month/day of `date`.
- * The year is ignored: the feed is the same for 03-15 in any year.
+ * Fetches historical events, births and deaths for a month/day (`MM`, `DD`).
+ * There is no year: the feed is the same for 03-15 in any year. Use `toMonthDay` to get
+ * the parts from a `YYYY-MM-DD` date.
  *
  * Uses the single `all` endpoint (one request) and keeps only events, births and deaths.
  */
 export async function fetchOnThisDay(
-  date: string,
+  month: string,
+  day: string,
   signal?: AbortSignal,
 ): Promise<OnThisDayResponse> {
-  const { month, day } = toMonthDay(date);
   const response = await fetch(`${ON_THIS_DAY_URL}/${month}/${day}`, { signal });
 
   if (!response.ok) {
