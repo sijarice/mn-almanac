@@ -9,6 +9,32 @@ export function todayIso(now: Date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * Whether `date` is a real calendar date in `YYYY-MM-DD` format.
+ * The regex alone accepts `2024-02-30`, and `Date` silently rolls it over to March 1,
+ * so the parts are read back to check nothing rolled over.
+ */
+export function isValidIsoDate(date: string): boolean {
+  const match = ISO_DATE.exec(date);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    parsed.getUTCFullYear() === year &&
+    parsed.getUTCMonth() === month - 1 &&
+    parsed.getUTCDate() === day
+  );
+}
+
+/** `date` (`YYYY-MM-DD`) moved by `days` (negative for earlier), as `YYYY-MM-DD`. */
+export function addDays(date: string, days: number): string {
+  return new Date(toUtcMs(date) + days * MS_PER_DAY).toISOString().slice(0, 10);
+}
+
 /** Calendar days from `from` to `to` (both `YYYY-MM-DD`). Negative when `to` is earlier. */
 export function daysBetween(from: string, to: string): number {
   return (toUtcMs(to) - toUtcMs(from)) / MS_PER_DAY;
