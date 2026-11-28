@@ -1,11 +1,6 @@
 import { Link as RouterLink, Outlet } from 'react-router';
 import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material';
 
-/**
- * Shared shell for every page: a top bar, and the current child route rendered in `<Outlet />`.
- * MUI components render a plain `<a>` (full page reload), so `component={RouterLink}` swaps in
- * React Router's link, which navigates on the client.
- */
 const Layout = () => (
   <Box sx={{ minHeight: '100vh' }}>
     <AppBar position="sticky">
