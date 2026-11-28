@@ -40,6 +40,21 @@ export function daysBetween(from: string, to: string): number {
   return (toUtcMs(to) - toUtcMs(from)) / MS_PER_DAY;
 }
 
+/**
+ * `date` (`YYYY-MM-DD`) for display, e.g. "Friday, November 27, 2026" (wording depends on `locale`,
+ * which defaults to the browser's). Formatted in UTC, the same zone `toUtcMs` parses in,
+ * so the user's time zone can't shift it to the day before.
+ */
+export function formatLongDate(date: string, locale?: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(toUtcMs(date));
+}
+
 /** Parses `YYYY-MM-DD` as a UTC midnight timestamp, so time zones and DST never shift the day. */
 function toUtcMs(date: string): number {
   const match = ISO_DATE.exec(date);
