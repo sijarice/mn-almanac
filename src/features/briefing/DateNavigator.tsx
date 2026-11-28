@@ -1,31 +1,40 @@
-import { IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import { Button, IconButton, Stack, Tooltip } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { addDays, formatLongDate } from '../../utils/date';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import type { DateValidationError, PickerChangeHandlerContext } from '@mui/x-date-pickers/models';
+import dayjs, { type Dayjs } from 'dayjs';
+import { addDays } from '../../utils/date';
+
+const ISO_FORMAT = 'YYYY-MM-DD';
 
 interface DateNavigatorProps {
-  /** The date being shown, `YYYY-MM-DD`. */
   date: string;
-  /** The latest date allowed; Next is disabled once it's reached. */
+  today: string;
   maxDate: string;
-  /** Called with the new `YYYY-MM-DD` date. The parent decides what changing the date means. */
   onDateChange: (date: string) => void;
 }
 
-/**
- * Previous / next day controls around the formatted date.
- * Controlled: it holds no state and knows nothing about routing, it only reports the date the user picked.
- */
-const DateNavigator = ({ date, maxDate, onDateChange }: DateNavigatorProps) => {
+const DateNavigator = ({ date, today, maxDate, onDateChange }: DateNavigatorProps) => {
   const previous = addDays(date, -1);
   const next = addDays(date, 1);
   const isNextDisabled = next > maxDate;
+
+  const handlePickerChange = (
+    value: Dayjs | null,
+    context: PickerChangeHandlerContext<DateValidationError>,
+  ) => {
+    if (value?.isValid() && context.validationError === null) {
+      onDateChange(value.format(ISO_FORMAT));
+    }
+  };
 
   return (
     <Stack
       direction="row"
       spacing={1}
-      sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 3 }}
+      useFlexGap
+      sx={{ alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', mb: 3 }}
     >
       <Tooltip title="Previous day">
         <IconButton aria-label="Previous day" onClick={() => onDateChange(previous)}>
@@ -33,11 +42,14 @@ const DateNavigator = ({ date, maxDate, onDateChange }: DateNavigatorProps) => {
         </IconButton>
       </Tooltip>
 
-      <Typography variant="h5" component="h1" sx={{ textAlign: 'center' }}>
-        {formatLongDate(date)}
-      </Typography>
+      <DatePicker
+        label="Date"
+        value={dayjs(date)}
+        maxDate={dayjs(maxDate)}
+        onChange={handlePickerChange}
+        slotProps={{ textField: { size: 'small', sx: { width: 170 } } }}
+      />
 
-      {/* A disabled button fires no mouse events, so the Tooltip needs a wrapper element to listen on. */}
       <Tooltip title="Next day">
         <span>
           <IconButton
@@ -49,6 +61,10 @@ const DateNavigator = ({ date, maxDate, onDateChange }: DateNavigatorProps) => {
           </IconButton>
         </span>
       </Tooltip>
+
+      <Button variant="outlined" disabled={date === today} onClick={() => onDateChange(today)}>
+        Today
+      </Button>
     </Stack>
   );
 };
