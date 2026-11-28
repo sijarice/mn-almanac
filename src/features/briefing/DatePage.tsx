@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router';
 import { Typography } from '@mui/material';
 import { formatLongDate, todayIso } from '../../utils/date';
+import Briefing from './Briefing';
 import DateNavigator from './DateNavigator';
 import { maxSelectableDate } from './dateLimits';
 
@@ -24,6 +25,8 @@ const DatePage = () => {
         maxDate={maxSelectableDate(today)}
         onDateChange={(newDate) => void navigate(`/date/${newDate}`)}
       />
+
+      <Briefing key={date} date={date} />
     </>
   );
 };
