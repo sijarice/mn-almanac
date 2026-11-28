@@ -1,10 +1,24 @@
-import { useParams } from 'react-router';
-import Typography from '@mui/material/Typography';
+import { useNavigate, useParams } from 'react-router';
+import { todayIso } from '../../utils/date';
+import DateNavigator from './DateNavigator';
+import { maxSelectableDate } from './dateLimits';
 
 const DatePage = () => {
-  const params = useParams();
+  const { date } = useParams();
+  const navigate = useNavigate();
 
-  return <Typography variant="h1">Date Page: {params.date}</Typography>;
+  // The route's loader already redirects bad dates, so this only satisfies TypeScript
+  // (`useParams` types every param as `string | undefined`).
+  if (!date) return null;
+
+  return (
+    <DateNavigator
+      date={date}
+      maxDate={maxSelectableDate(todayIso())}
+      // Push (no `replace`), so browser Back steps through the days you visited.
+      onDateChange={(newDate) => void navigate(`/date/${newDate}`)}
+    />
+  );
 };
 
 export default DatePage;

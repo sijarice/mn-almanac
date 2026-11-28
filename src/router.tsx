@@ -2,8 +2,8 @@ import { createBrowserRouter, redirect } from 'react-router';
 import Layout from './components/Layout';
 import DatePage from './features/briefing/DatePage';
 import BookmarksPage from './features/bookmarks/BookmarksPage';
-import { FORECAST_MAX_DAYS_AHEAD } from './api/weather';
-import { addDays, isValidIsoDate, todayIso } from './utils/date';
+import { maxSelectableDate } from './features/briefing/dateLimits';
+import { isValidIsoDate, todayIso } from './utils/date';
 
 export const router = createBrowserRouter([
   {
@@ -23,8 +23,7 @@ export const router = createBrowserRouter([
         // ISO `YYYY-MM-DD` strings compare in date order, so `>` works on them directly.
         loader: ({ params }) => {
           const { date } = params;
-          const maxDate = addDays(todayIso(), FORECAST_MAX_DAYS_AHEAD);
-          if (!date || !isValidIsoDate(date) || date > maxDate) {
+          if (!date || !isValidIsoDate(date) || date > maxSelectableDate(todayIso())) {
             return redirect('/');
           }
           return null;
